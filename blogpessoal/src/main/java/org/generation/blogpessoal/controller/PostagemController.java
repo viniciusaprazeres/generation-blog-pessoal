@@ -2,6 +2,7 @@ package org.generation.blogpessoal.controller;
 
 import org.generation.blogpessoal.model.Postagem;
 import org.generation.blogpessoal.repository.PostagemRespository;
+import org.generation.blogpessoal.repository.TemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,9 @@ public class PostagemController {
     @Autowired
     private PostagemRespository postagemRespository;
 
+    @Autowired
+    private TemaRepository temaRepository;
+
     @GetMapping
     public ResponseEntity<List<Postagem>> getAll(){
         return ResponseEntity.ok(postagemRespository.findAll());
@@ -37,12 +41,23 @@ public class PostagemController {
 
     @PostMapping
     public ResponseEntity <Postagem> post(@Valid @RequestBody Postagem postagem){
-        return ResponseEntity.status(HttpStatus.CREATED).body(postagemRespository.save(postagem));
+        if (temaRepository.existsById(postagem.getTema().getId()))
+            return ResponseEntity.status(HttpStatus.CREATED).body(postagemRespository.save(postagem));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PutMapping
     public ResponseEntity <Postagem> put(@Valid @RequestBody Postagem postagem){
-        return postagemRespository.findById(postagem.getId()).map(resposta -> ResponseEntity.status(HttpStatus.OK).body(postagemRespository.save(postagem))).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        if (postagemRespository.existsById(postagem.getId())){
+            if (temaRepository.existsById(postagem.getTema().getId()))
+                return ResponseEntity.status(HttpStatus.OK).body(postagemRespository.save(postagem));
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
