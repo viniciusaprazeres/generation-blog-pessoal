@@ -17,21 +17,21 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "O atributo nome é obrigatório!")
+    @NotNull(message = "O Atributo Nome é Obrigatório!")
     private String nome;
 
-    @NotNull(message = "O atributo usuário é obrigatório!")
-    @Email(message = "O atributo usuário deve ser um e-mail válido!")
+    @NotNull(message = "O Atributo Usuário é Obrigatório!")
+    @Email(message = "O Atributo Usuário deve ser um email válido!")
     private String usuario;
 
-    @NotBlank(message = "O atributo senha é obrigatório!")
-    @Size(min = 8, message = "A senha dever ter no mínimo 8 caracteres")
+    @NotBlank(message = "O Atributo Senha é Obrigatório!")
+    @Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
     private String senha;
 
-    @Size(min = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres.")
+    @Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres")
     private String foto;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("usuario")
     private List<Postagem> postagem;
 
